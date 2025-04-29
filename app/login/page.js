@@ -1,34 +1,32 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { authController } from "../../controllers/auth";
+import { useState } from 'react'
+import { authController } from '../../controllers/auth'
 
 export default function LoginPage() {
-  const [cpf, setCpf] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const [cpf, setCpf] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setError('')
 
     try {
-      const { token, user } = await authController.login(cpf, password);
-      authController.setAuthData(token, user);
+      const { token, user } = await authController.login(cpf, password)
+      authController.setAuthData(token, user)
 
-      const currentUser = await authController.getCurrentUser();
+      const currentUser = await authController.getCurrentUser()
       if (currentUser) {
-        window.location.href = "/";
+        window.location.href = '/prata'
       } else {
-        throw new Error("Falha ao verificar autenticação");
+        throw new Error('Falha ao verificar autenticação')
       }
     } catch (err) {
-      setError(err.message);
-      authController.clearAuthData();
+      setError(err.message)
+      authController.clearAuthData()
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -52,9 +50,8 @@ export default function LoginPage() {
               </svg>
             </div>
           </div>
-          <h2 className=" font-bold text-gray-900 mb-2">
-            Faça login para continuar
-          </h2>
+          <h2 className=" font-bold text-gray-900 mb-2">Faça login para continuar</h2>
+          <p className="text-sm text-gray-600">Apenas administradores podem acessar o sistema</p>
         </div>
 
         {error && (
@@ -64,11 +61,7 @@ export default function LoginPage() {
           >
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-red-500"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
+                <svg className="h-5 w-5 text-red-500" viewBox="0 0 20 20" fill="currentColor">
                   <path
                     fillRule="evenodd"
                     d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
@@ -86,11 +79,8 @@ export default function LoginPage() {
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
             <div>
-              <label
-                htmlFor="cpf"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                CPF
+              <label htmlFor="cpf" className="block text-sm font-medium text-gray-700 mb-1">
+                Usuário
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -115,18 +105,15 @@ export default function LoginPage() {
                   type="text"
                   required
                   className="appearance-none text-black block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
-                  placeholder="Digite seu CPF"
+                  placeholder="Digite seu Usuário"
                   value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
+                  onChange={e => setCpf(e.target.value)}
                 />
               </div>
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
                 Senha
               </label>
               <div className="relative">
@@ -154,7 +141,7 @@ export default function LoginPage() {
                   className="appearance-none block text-black w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-150 ease-in-out"
                   placeholder="Digite sua senha"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </div>
             </div>
@@ -187,5 +174,5 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
-  );
+  )
 }

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { videoService } from '../services/videoService';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { videoService } from "../services/videoService";
 
 export default function DIPage() {
   const [videos, setVideos] = useState([]);
@@ -12,7 +12,7 @@ export default function DIPage() {
   useEffect(() => {
     const loadVideos = async () => {
       try {
-        const data = await videoService.getVideosByBank('di');
+        const data = await videoService.getVideosByBank("di");
         console.log(data);
         setVideos(data);
       } catch (err) {
@@ -28,7 +28,7 @@ export default function DIPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-black"></div>
       </div>
     );
   }
@@ -36,7 +36,10 @@ export default function DIPage() {
   if (error) {
     return (
       <div className="p-6">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           <strong className="font-bold">Erro!</strong>
           <span className="block sm:inline"> {error}</span>
         </div>
@@ -47,7 +50,7 @@ export default function DIPage() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6 text-black">DI+</h1>
-      
+
       {videos && videos.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4">
           {videos.map((video) => (
@@ -86,4 +89,4 @@ export default function DIPage() {
       )}
     </div>
   );
-} 
+}
