@@ -51,7 +51,7 @@ export const videoService = {
   async updateVideo(videoId, data) {
     try {
       const { token } = authController.getAuthData()
-      const response = await fetch(`http://localhost:8000/api/videos/${videoId}/`, {
+      const response = await fetch(`${API_URL}/videos/${videoId}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +67,7 @@ export const videoService = {
   async deleteVideo(videoId) {
     try {
       const { token } = authController.getAuthData()
-      const response = await fetch(`http://localhost:8000/api/videos/${videoId}/`, {
+      const response = await fetch(`${API_URL}/videos/${videoId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,
