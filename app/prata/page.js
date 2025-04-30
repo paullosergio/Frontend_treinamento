@@ -1,36 +1,36 @@
-'use client';
+"use client"
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { videoService } from '../services/videoService';
+import { useEffect, useState } from "react"
+import Image from "next/image"
+import { videoService } from "../services/videoService"
 
 export default function PrataPage() {
-  const [videos, setVideos] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [videos, setVideos] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     const loadVideos = async () => {
       try {
-        const data = await videoService.getVideosByBank('prata');
-        console.log(data);
-        setVideos(data);
+        const data = await videoService.getVideosByBank("prata")
+        console.log(data)
+        setVideos(data)
       } catch (err) {
-        setError(err.message);
+        setError(err.message)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    loadVideos();
-  }, []);
+    loadVideos()
+  }, [])
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-black"></div>
       </div>
-    );
+    )
   }
 
   if (error) {
@@ -44,14 +44,12 @@ export default function PrataPage() {
           <span className="block sm:inline"> {error}</span>
         </div>
       </div>
-    );
+    )
   }
 
   return (
     <div className="sm:p-6 min-h-screen">
-      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-black">
-        Prata Digital
-      </h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6 text-black">Prata Digital</h1>
 
       {videos && videos.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
@@ -87,11 +85,9 @@ export default function PrataPage() {
         </div>
       ) : (
         <div className="flex justify-center items-center py-12 sm:py-20">
-          <p className="text-gray-500 text-base sm:text-lg">
-            Nenhum vídeo encontrado
-          </p>
+          <p className="text-gray-500 text-base sm:text-lg">Nenhum vídeo encontrado</p>
         </div>
       )}
     </div>
-  );
+  )
 }

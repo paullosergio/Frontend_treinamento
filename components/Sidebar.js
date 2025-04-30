@@ -1,81 +1,110 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import MenuItem from "./MenuItem";
-import { authController } from "../controllers/auth";
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
+import MenuItem from "./MenuItem"
+import { authController } from "../controllers/auth"
+import { videoService } from "../app/services/videoService"
 
 const Sidebar = ({ onToggle }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const [error, setError] = useState(null);
-  const [currentUser, setCurrentUser] = useState(null);
-  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const [error, setError] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [menuItems, setMenuItems] = useState([])
+  const router = useRouter()
+
+  const BANK_LABELS = {
+    prata: "Prata Digital",
+    di: "DI+",
+    crefisa: "Crefisa",
+    unno: "Unno",
+    vctex: "VCTEX",
+    hub_credito: "Hub Crédito",
+    corbee: "Sistema de Comssionamento",
+    ph_tech: "PH Tech",
+    grandino: "Grandino",
+    lotus: "Lotus",
+    v8: "V8",
+    granapix: "Granapix",
+    icred: "ICred",
+    novo_saque: "Novo Saque"
+  }
+
+  const loadVideos = async () => {
+    const data = await videoService.getAllVideos()
+    console.log(data)
+
+    const uniqueBanks = [...new Set(data.map(item => item.bank))]
+
+    const dynamicMenuItems = uniqueBanks
+      .filter(bank => BANK_LABELS[bank]) // ignora bancos sem rótulo definido
+      .map(bank => ({
+        name: BANK_LABELS[bank],
+        path: `/${bank.toLowerCase().replace(/\s+/g, "-")}`
+      }))
+
+    setMenuItems(dynamicMenuItems)
+  }
 
   useEffect(() => {
     const checkMobile = () => {
-      const mobile = window.innerWidth < 768;
-      setIsMobile(mobile);
+      const mobile = window.innerWidth < 768
+      setIsMobile(mobile)
       // Em desktop, mantém aberto por padrão
       if (!mobile) {
-        setIsOpen(true);
+        setIsOpen(true)
       }
-    };
+      loadVideos()
+    }
 
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
-  }, []);
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
 
   const handleToggle = () => {
-    const newState = !isOpen;
-    setIsOpen(newState);
-    onToggle?.(newState);
-  };
+    const newState = !isOpen
+    setIsOpen(newState)
+    onToggle?.(newState)
+  }
 
   const handleLogout = () => {
-    authController.clearAuthData();
-    setCurrentUser(null);
-    router.push("/login");
-  };
-
-  const baseMenuItems = [
-    { name: "Prata Digital", path: "/prata" },
-    { name: "DI+", path: "/di" },
-    { name: "Crefisa", path: "/crefisa" },
-    { name: "Unno", path: "/unno" },
-  ];
+    authController.clearAuthData()
+    setCurrentUser(null)
+    router.push("/login")
+  }
 
   const extendedMenuItems = currentUser
-    ? [...baseMenuItems, { name: "Adicionar Banco", path: "/adicionar-banco" }]
-    : baseMenuItems;
+    ? [
+        ...menuItems,
+        { name: "Adicionar Vídeo", path: "/adicionar-video" },
+        { name: "Gerenciar Videos", path: "/gerenciar-videos" }
+      ]
+    : menuItems
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const data = authController.getAuthData();
+        const data = authController.getAuthData()
         if (data.token) {
-          const userData = await authController.getCurrentUser();
-          setCurrentUser(userData);
+          const userData = await authController.getCurrentUser()
+          setCurrentUser(userData)
         }
       } catch (err) {
-        setError(err.message);
-        console.error("Erro ao buscar dados do usuário:", err);
+        setError(err.message)
+        console.error("Erro ao buscar dados do usuário:", err)
       }
-    };
+    }
 
-    fetchUserData();
-  }, []);
+    fetchUserData()
+  }, [])
 
   return (
     <>
       {/* Overlay para mobile - só aparece quando o menu está aberto em mobile */}
-      {isMobile && isOpen && (
-        <div 
-          onClick={() => setIsOpen(false)}
-        />
-      )}
+      {isMobile && isOpen && <div onClick={() => setIsOpen(false)} />}
 
       <div
         className={`fixed left-0 top-0 h-screen bg-gray-800 shadow-lg transition-all duration-300 z-50 ${
@@ -104,11 +133,11 @@ const Sidebar = ({ onToggle }) => {
             {isOpen ? "◀" : "☰"}
           </button>
         </div>
-        
+
         {isOpen ? (
           <nav className="p-4 flex flex-col h-[calc(100vh-4rem)]">
             <ul className="space-y-2 flex-grow">
-              {extendedMenuItems.map((item) => (
+              {extendedMenuItems.map(item => (
                 <MenuItem key={item.name} name={item.name} path={item.path} />
               ))}
             </ul>
@@ -152,20 +181,18 @@ const Sidebar = ({ onToggle }) => {
         ) : (
           <div className="p-2 flex flex-col items-center h-[calc(100vh-4rem)]">
             <ul className="space-y-4 mt-4">
-              {extendedMenuItems.map((item) => (
+              {extendedMenuItems.map(item => (
                 <li key={item.name} className="tooltip tooltip-right" data-tip={item.name}>
-                  <Link 
-                    href={item.path} 
+                  <Link
+                    href={item.path}
                     className="flex items-center justify-center p-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
                   >
-                    <span className="text-xl">
-                      {item.name.charAt(0)}
-                    </span>
+                    <span className="text-xl">{item.name.charAt(0)}</span>
                   </Link>
                 </li>
               ))}
             </ul>
-            
+
             <div className="mt-auto mb-4">
               {currentUser ? (
                 <button
@@ -189,8 +216,8 @@ const Sidebar = ({ onToggle }) => {
                   </svg>
                 </button>
               ) : (
-                <Link 
-                  href="/login" 
+                <Link
+                  href="/login"
                   className="tooltip tooltip-right p-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md block transition-colors"
                   data-tip="Login"
                 >
@@ -213,13 +240,11 @@ const Sidebar = ({ onToggle }) => {
             </div>
           </div>
         )}
-        
-        {error && isOpen && (
-          <div className="p-4 text-red-400 text-sm">{error}</div>
-        )}
+
+        {error && isOpen && <div className="p-4 text-red-400 text-sm">{error}</div>}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default Sidebar;
+export default Sidebar

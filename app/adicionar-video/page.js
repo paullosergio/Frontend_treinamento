@@ -1,7 +1,8 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { videoService } from "../services/videoService";
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { videoService } from "../services/videoService"
 
 const VALID_VIDEO_TYPES = [
   "video/mp4",
@@ -10,97 +11,120 @@ const VALID_VIDEO_TYPES = [
   "video/quicktime",
   "video/x-msvideo",
   "video/x-ms-wmv",
-  "video/x-matroska",
-];
+  "video/x-matroska"
+]
 
 export default function AdicionarBancoPage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     title: "",
     bank: "",
-    video_file: null,
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [fileError, setFileError] = useState(null);
+    video_file: null
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(false)
+  const [fileError, setFileError] = useState(null)
 
-  const validateFile = (file) => {
-    if (!file) return false;
+  const validateFile = file => {
+    if (!file) return false
+
+    // Remove pontos extras e mantém apenas o último ponto antes da extensão
+    const fileName = file.name
+    const lastDotIndex = fileName.lastIndexOf(".")
+    if (lastDotIndex === -1) {
+      setFileError("O arquivo deve ter uma extensão")
+      return false
+    }
+
+    const nameWithoutExt = fileName.substring(0, lastDotIndex)
+    const extension = fileName.substring(lastDotIndex)
+    const cleanName = nameWithoutExt.replace(/\./g, "") + extension
+
+    // Atualiza o nome do arquivo
+    const newFile = new File([file], cleanName, { type: file.type })
+    setFormData(prev => ({
+      ...prev,
+      video_file: newFile
+    }))
 
     // Verifica o tipo do arquivo
     if (!VALID_VIDEO_TYPES.includes(file.type)) {
-      setFileError(
-        "Formato de vídeo não suportado. Use MP4, WebM, OGG, MOV, AVI, WMV ou MKV."
-      );
-      return false;
+      setFileError("Formato de vídeo não suportado. Use MP4, WebM, OGG, MOV, AVI, WMV ou MKV.")
+      return false
     }
 
     // Verifica o tamanho do arquivo (máximo 500MB)
-    const maxSize = 500 * 1024 * 1024; // 500MB em bytes
+    const maxSize = 500 * 1024 * 1024 // 500MB em bytes
     if (file.size > maxSize) {
-      setFileError("O arquivo é muito grande. Tamanho máximo permitido: 500MB");
-      return false;
+      setFileError("O arquivo é muito grande. Tamanho máximo permitido: 500MB")
+      return false
     }
 
-    setFileError(null);
-    return true;
-  };
+    setFileError(null)
+    return true
+  }
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
+  const handleChange = e => {
+    const { name, value, files } = e.target
 
     if (name === "video_file" && files && files[0]) {
       if (validateFile(files[0])) {
-        setFormData((prev) => ({
+        setFormData(prev => ({
           ...prev,
-          [name]: files[0],
-        }));
+          [name]: files[0]
+        }))
       } else {
         // Limpa o input de arquivo se a validação falhar
-        e.target.value = "";
-        setFormData((prev) => ({
+        e.target.value = ""
+        setFormData(prev => ({
           ...prev,
-          [name]: null,
-        }));
+          [name]: null
+        }))
       }
     } else {
-      setFormData((prev) => ({
+      setFormData(prev => ({
         ...prev,
-        [name]: files ? files[0] : value,
-      }));
+        [name]: files ? files[0] : value
+      }))
     }
-  };
+  }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
+  const handleSubmit = async e => {
+    e.preventDefault()
+    setLoading(true)
+    setError(null)
+    setSuccess(false)
 
     if (!validateFile(formData.video_file)) {
-      setLoading(false);
-      return;
+      setLoading(false)
+      return
     }
 
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("bank", formData.bank);
-      formDataToSend.append("video_file", formData.video_file);
+      const formDataToSend = new FormData()
+      formDataToSend.append("title", formData.title)
+      formDataToSend.append("bank", formData.bank)
+      formDataToSend.append("video_file", formData.video_file)
 
-      await videoService.uploadVideo(formDataToSend);
-      setSuccess(true);
+      await videoService.uploadVideo(formDataToSend)
+      setSuccess(true)
       setFormData({
         title: "",
         bank: "",
-        video_file: null,
-      });
+        video_file: null
+      })
+
+      // Redireciona após 2 segundos para dar tempo do usuário ver a mensagem de sucesso
+      setTimeout(() => {
+        router.push("/gerenciar-videos")
+      }, 2000)
     } catch (err) {
-      setError(err.message);
+      setError(err.message)
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="mx-auto">
@@ -127,10 +151,7 @@ export default function AdicionarBancoPage() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-black mb-1"
-          >
+          <label htmlFor="title" className="block text-sm font-medium text-black mb-1">
             Título do Vídeo
           </label>
           <input
@@ -146,10 +167,7 @@ export default function AdicionarBancoPage() {
         </div>
 
         <div>
-          <label
-            htmlFor="bank"
-            className="block text-sm font-medium text-black mb-1"
-          >
+          <label htmlFor="bank" className="block text-sm font-medium text-black mb-1">
             Banco
           </label>
           <select
@@ -164,15 +182,21 @@ export default function AdicionarBancoPage() {
             <option value="prata">Prata Digital</option>
             <option value="di">DI+</option>
             <option value="crefisa">Crefisa</option>
-            <option value="unno">Unno</option>
+            <option value="vctex">VCTEX</option>
+            <option value="hub_credito">Hub Crédito</option>
+            <option value="corbee">Sistema de Comssionamento Corbee</option>
+            <option value="ph_tech">PH Tech</option>
+            <option value="grandino">Grandino</option>
+            <option value="lotus">Lotus</option>
+            <option value="v8">V8</option>
+            <option value="granapix">Granapix</option>
+            <option value="icred">ICred</option>
+            <option value="novo_saque">Novo Saque</option>
           </select>
         </div>
 
         <div>
-          <label
-            htmlFor="video_file"
-            className="block text-sm font-medium text-black mb-1"
-          >
+          <label htmlFor="video_file" className="block text-sm font-medium text-black mb-1">
             Arquivo do Vídeo
           </label>
           <input
@@ -185,12 +209,9 @@ export default function AdicionarBancoPage() {
             accept=".mp4,.webm,.ogg,.mov,.avi,.wmv,.mkv,video/mp4,video/webm,video/ogg,video/quicktime,video/x-msvideo,video/x-ms-wmv,video/x-matroska"
             className="w-full px-3 py-2 border border-gray-300 text-black rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-black"
           />
-          {fileError && (
-            <p className="mt-1 text-sm text-red-600">{fileError}</p>
-          )}
+          {fileError && <p className="mt-1 text-sm text-red-600">{fileError}</p>}
           <p className="mt-1 text-sm text-gray-500">
-            Formatos aceitos: MP4, WebM, OGG, MOV, AVI, WMV, MKV. Tamanho
-            máximo: 500MB
+            Formatos aceitos: MP4, WebM, OGG, MOV, AVI, WMV, MKV. Tamanho máximo: 500MB
           </p>
         </div>
 
@@ -198,7 +219,7 @@ export default function AdicionarBancoPage() {
           <button
             type="submit"
             disabled={loading || fileError}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
+            className={`w-full flex justify-center cursor-pointer py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white ${
               loading || fileError
                 ? "bg-blue-400 cursor-not-allowed"
                 : "bg-blue-500 hover:bg-blue-600"
@@ -209,5 +230,5 @@ export default function AdicionarBancoPage() {
         </div>
       </form>
     </div>
-  );
+  )
 }

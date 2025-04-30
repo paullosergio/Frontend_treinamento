@@ -46,5 +46,35 @@ export const videoService = {
     } catch (error) {
       throw new Error(error.message)
     }
-  }
+  },
+
+  async updateVideo(videoId, data) {
+    try {
+      const { token } = authController.getAuthData()
+      const response = await fetch(`http://localhost:8000/api/videos/${videoId}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(data),
+      })
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  },
+
+  async deleteVideo(videoId) {
+    try {
+      const { token } = authController.getAuthData()
+      const response = await fetch(`http://localhost:8000/api/videos/${videoId}/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+    } catch (error) {
+      throw new Error(error.message)
+    }
+  },
 }
