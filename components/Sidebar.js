@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import Link from "next/link"
 import MenuItem from "./MenuItem"
 import { authController } from "../controllers/auth"
 import { videoService } from "../app/services/videoService"

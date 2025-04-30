@@ -10,12 +10,12 @@ const metadata = {
 }
 
 export default function RootLayout({ children }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
 
   return (
     <html lang="pt-BR">
       <body>
-        <div className="flex bg-white ">
+        <div className="flex bg-white">
           <Sidebar onToggle={setIsSidebarOpen} />
           <main
             className={`flex-1 transition-all duration-300 p-8 min-h-screen bg-white ${
