@@ -114,15 +114,11 @@ export default function AdicionarBancoPage() {
         bank: "",
         video_file: null
       })
-
-      // Redireciona após 2 segundos para dar tempo do usuário ver a mensagem de sucesso
-      setTimeout(() => {
-        router.push("/gerenciar-videos")
-      }, 2000)
     } catch (err) {
       setError(err.message)
     } finally {
       setLoading(false)
+      window.location.href = "/adicionar-video"
     }
   }
 

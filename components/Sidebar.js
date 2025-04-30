@@ -34,7 +34,6 @@ const Sidebar = ({ onToggle }) => {
 
   const loadVideos = async () => {
     const data = await videoService.getAllVideos()
-    console.log(data)
 
     const uniqueBanks = [...new Set(data.map(item => item.bank))]
 
@@ -52,10 +51,6 @@ const Sidebar = ({ onToggle }) => {
     const checkMobile = () => {
       const mobile = window.innerWidth < 768
       setIsMobile(mobile)
-      // Em desktop, mantém aberto por padrão
-      if (!mobile) {
-        setIsOpen(true)
-      }
       loadVideos()
     }
 
@@ -107,13 +102,13 @@ const Sidebar = ({ onToggle }) => {
       {isMobile && isOpen && <div onClick={() => setIsOpen(false)} />}
 
       <div
-        className={`fixed left-0 top-0 h-screen bg-gray-800 shadow-lg transition-all duration-300 z-50 ${
+        className={`fixed left-0 top-0 h-screen bg-gray-700 shadow-lg transition-all duration-300 z-50 ${
           isOpen ? "w-64" : "w-16"
         }`}
       >
         <div className="p-4 flex bg-gray-800 justify-between items-center border-b border-gray-700">
           {isOpen && currentUser && (
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-3 ">
               <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-medium">
                   {currentUser.name?.charAt(0) || "U"}
@@ -134,7 +129,7 @@ const Sidebar = ({ onToggle }) => {
           </button>
         </div>
 
-        {isOpen ? (
+        {isOpen && (
           <nav className="p-4 flex flex-col h-[calc(100vh-4rem)]">
             <ul className="space-y-2 flex-grow">
               {extendedMenuItems.map(item => (
@@ -178,69 +173,7 @@ const Sidebar = ({ onToggle }) => {
               </ul>
             </div>
           </nav>
-        ) : (
-          <div className="p-2 flex flex-col items-center h-[calc(100vh-4rem)]">
-            <ul className="space-y-4 mt-4">
-              {extendedMenuItems.map(item => (
-                <li key={item.name} className="tooltip tooltip-right" data-tip={item.name}>
-                  <Link
-                    href={item.path}
-                    className="flex items-center justify-center p-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-                  >
-                    <span className="text-xl">{item.name.charAt(0)}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-auto mb-4">
-              {currentUser ? (
-                <button
-                  onClick={handleLogout}
-                  className="tooltip tooltip-right p-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md transition-colors"
-                  data-tip="Sair"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                    ></path>
-                  </svg>
-                </button>
-              ) : (
-                <Link
-                  href="/login"
-                  className="tooltip tooltip-right p-3 text-gray-300 hover:text-white hover:bg-gray-700 rounded-md block transition-colors"
-                  data-tip="Login"
-                >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                    ></path>
-                  </svg>
-                </Link>
-              )}
-            </div>
-          </div>
         )}
-
         {error && isOpen && <div className="p-4 text-red-400 text-sm">{error}</div>}
       </div>
     </>
