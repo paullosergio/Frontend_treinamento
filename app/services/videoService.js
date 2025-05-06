@@ -71,7 +71,6 @@ export const videoService = {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,
-          "Cache-Control": "no-cache",
         },
       })
     } catch (error) {
